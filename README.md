@@ -1,17 +1,21 @@
 # documentation-drawings
 
-I will do the wiki first and then add code.
+A Delphi FMX project ( **RG79** ), consisting of:
 
-The code will be a Delphi FMX project called **RG79**.
+- A dpr file.
+- A dproj file for Delphi 10.2.3 Tokyo.
+- A *main form* which is a generic UI for all drawings (in folder App).
+- A *library unit* with drawing elements and more (in folder FD).
+- A bunch of *example drawings* (in folder FZ).
 
+![RG79 screenshot](images/Z03-Viergelenk.png)
 
-RG79 will compact the library code into one unit.
-We will end up with:
+Read more in the Wiki!
 
-- A main form which is a generic UI for all drawings.
-- A library unit with drawing elements and more.
-- A bunch of example drawings.
+You should find it easy to create similar documentation drawings for your project.
 
-The wiki will explain the example drawings in some detail.
-You should find it easy to create new documentation drawings for your project.
-See repository RiggVar-RG38, it already contains the code for the documentation drawings, in expanded form.
+Note that the project started out as a sub-project in repository [RiggVar-RG38](https://github.com/federgraph/RiggVar-RG38).
+While RG38 contains the reusable code in expanded form,
+RG79 has *compacted* the *library* code into just one unit.
+
+Now we have a standalone project which can be the starting point to do more.
