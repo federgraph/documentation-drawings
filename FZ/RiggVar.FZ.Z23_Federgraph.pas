@@ -8,8 +8,6 @@ uses
   System.Math,
   System.Math.Vectors,
   System.Types,
-  System.UIConsts,
-  FMX.Graphics,
   RiggVar.FD.Elements;
 
 {$define WantDiameter}
@@ -33,8 +31,6 @@ type
   protected
     function Kraft(k, l, l0: single): single;
     function Force(k, l, l0: single; m: Integer): single;
-    function Diff1(i: Integer; x, y: single): single; virtual;
-    function Diff2(i: Integer; x, y: single): single; virtual;
   public
     FaktorEQ: Integer;
     SourceFormat: Integer;
@@ -99,16 +95,11 @@ type
     procedure PrepareCalc; override;
 
     procedure InitFormula;
-    procedure InitRandom(ID: Integer);
     function CalcFederFormula(x, y: single): single;
 
     procedure InitKoord; virtual;
     procedure InitFaktorEQ;
     procedure InitMaxPlotFigure;
-    procedure InitMemo(ML: TStrings); virtual;
-    procedure CalcBF(x, y: single); virtual;
-    function CalcRaw(x, y : single): single; virtual;
-    function CalcValue(x, y : single; af: Integer): single; virtual;
     function GetStatusLine: string; virtual;
     property SampleInfo: string read GetSampleInfo;
   end;
@@ -142,10 +133,6 @@ type
 
     constructor Create;
     destructor Destroy; override;
-
-    procedure DrawTest(g: TCanvas);
-    procedure DrawPolyLine(p: TPolygon; opa: single);
-    function CircleRect(x, y, r: single): TRectF;
 
     procedure UpdateSize;
     procedure InitLL;
@@ -461,26 +448,6 @@ end;
 
 { TFederEquation }
 
-procedure TFederEquation.CalcBF(x, y: single);
-begin
-  a1 := sqr(x-x1) + sqr(y-y1);
-  a2 := sqr(x-x2) + sqr(y-y2);
-  a3 := sqr(x-x3) + sqr(y-y3);
-
-  t1 := sqrt(a1);
-  t2 := sqrt(a2);
-  t3 := sqrt(a3);
-
-  f1 := k1 * (t1 - l1);
-  f2 := k2 * (t2 - l2);
-  f3 := k3 * (t3 - l3);
-end;
-
-function TFederEquation.CalcValue(x, y: single; af: Integer): single;
-begin
-  result := 0;
-end;
-
 constructor TFederEquation.Create;
 begin
   inherited Create;
@@ -524,42 +491,6 @@ begin
   ForceMode := 0;
 end;
 
-procedure TFederEquation.InitRandom(ID: Integer);
-var
-  lT: single;
-  lL: single;
-  lZ: single;
-begin
-  lT := - 5 + Random(10);
-
-  x1 := 65 + lT;
-  x2 := -65 + lT;
-  x3 := 0;
-  y1 := 65 + lT;
-  y2 := 65 + lT;
-  y3 := -65 + lT;
-
-  lZ := - 5 + Random(10);
-  z1 := lZ;
-  z2 := lZ;
-  z3 := lZ;
-
-  lL := - 10 + Random(20);
-  l1 := 90 + lL;
-  l2 := 90 + lL;
-  l3 := 90 + lL;
-
-  k1 := 1;
-  k2 := 1;
-  k3 := 1;
-
-  m1 := 0;
-  m2 := 0;
-  m3 := 0;
-
-  ForceMode := 0;
-end;
-
 function TFederEquation.CalcFederFormula(x, y: single): single;
 begin
   a1 := sqr(x-x1) + sqr(y-y1);
@@ -575,11 +506,6 @@ begin
   b3 := t1 * t2 * (t3-l3) * k3;
 
   result := abs( (b1 * (x-x1) + b2 * (x-x2) + b3 * (x-x3)) / 1000000);
-end;
-
-function TFederEquation.CalcRaw(x, y: single): single;
-begin
-  result := 0;
 end;
 
 function TFederEquation.GetSampleInfo: string;
@@ -634,10 +560,6 @@ begin
     //EquationS MaxPlotfigure := 4;
     else FaktorEQ := 4;
   end;
-end;
-
-procedure TFederEquation.InitMemo(ML: TStrings);
-begin
 end;
 
 function TFederEquation.Kraft(k, l, l0: single): single;
@@ -704,18 +626,6 @@ begin
 
   pcap := 100 + Limit;
   mcap := -pcap;
-end;
-
-function TFederEquation.Diff1(i: Integer; x, y: single): single;
-begin
-  //virtual
-  result := 0;
-end;
-
-function TFederEquation.Diff2(i: Integer; x, y: single): single;
-begin
-  //virtual
-  result := 0;
 end;
 
 { TFederPoly }
@@ -854,52 +764,6 @@ begin
 
     LL[i].X := v5.X;
     LL[i].Y := v5.Y;
-  end;
-end;
-
-procedure TFederPoly.DrawPolyLine(p: TPolygon; opa: single);
-begin
-
-end;
-
-function TFederPoly.CircleRect(x, y, r: single): TRectF;
-begin
-  result := RectF(x - r, y - r, x + r, y + r);
-end;
-
-procedure TFederPoly.DrawTest(g: TCanvas);
-var
-  cr: TRectF;
-begin
-  sw1 := 1.0;
-  sw2 := 1.0;
-
-  if WantLC then
-  begin
-    { base circle }
-    g.Stroke.Thickness := sw1;
-    g.Stroke.Color := claAqua;
-    cr := CircleRect(ParamBahnPosition.X, ParamBahnPosition.Y, ParamBahnRadius);
-    g.DrawEllipse(cr, 1);
-
-    { function poly over probe circle }
-    g.Stroke.Thickness := sw2;
-    g.Stroke.Color := claRed;
-    g.Stroke.Dash := TStrokeDash.Solid;
-    DrawPolyLine(LC, 1.0);
-  end;
-
-  if WantLL then
-  begin
-    { base line }
-    g.Stroke.Thickness := sw1;
-    g.Stroke.Color := claOrange;
-    g.DrawLine(D1, D2, 1.0);
-
-    { function poly over probe diameter }
-    g.Stroke.Thickness := sw2;
-    g.Stroke.Color := claOrange;
-    DrawPolyLine(LL, 1.0);
   end;
 end;
 

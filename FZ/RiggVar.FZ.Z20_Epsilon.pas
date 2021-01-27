@@ -213,6 +213,7 @@ begin
   ML.Add('');
   ML.Add('see github.com/federgraph/');
   ML.Add('  repository RiggVar-RG38');
+  ML.Add('  or repository documentation-drawings');
   ML.Add('    drawings are in folder FZ');
   result := ML.Text;
   ML.Clear;
