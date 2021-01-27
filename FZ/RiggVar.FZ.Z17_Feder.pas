@@ -89,7 +89,7 @@ begin
   ML.Add('- select a circle element');
   ML.Add('- use key t to toggle caption visibility.');
   ML.Add('');
-  ML.Add('If button GSC (Global Show CaptionElement) is pressed');
+  ML.Add('If button GSC (Global Show Caption) is pressed');
   ML.Add('  then all element captions are shown.');
   ML.Add('');
   ML.Add('Element captions may be moved with mouse wheel.');

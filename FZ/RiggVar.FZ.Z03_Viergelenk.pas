@@ -29,9 +29,9 @@ type
     );
 
   TRiggPoints = record
-    class function CoordShortName(Index: TRiggPoint): string; static;
     class function CoordName(Index: TRiggPoint): string; static;
-    class function CoordNameEN(Index: TRiggPoint): string; static;
+    class function CoordLongNameDE(Index: TRiggPoint): string; static;
+    class function CoordLongNameEN(Index: TRiggPoint): string; static;
     case Integer of
       0: (V: array [TRiggPoint] of TPoint3D);
       1: (
@@ -325,7 +325,7 @@ end;
 
 function TRggDrawingZ03.GetHelpText: string;
 begin
-  ML.Add('Viergelenk A0ABB0 = mechanism A0 A B B0 = a four bar linkage?');
+  ML.Add('Viergelenk A0ABB0 = mechanism A0 A B B0 = a four bar linkage');
   ML.Add('');
   ML.Add('Line Element AB is called "Koppel".');
   ML.Add('  Points A, B and C are located in a plain, the "Koppelebene".');
@@ -381,7 +381,7 @@ begin
   end;
 end;
 
-class function TRiggPoints.CoordNameEN(Index: TRiggPoint): string;
+class function TRiggPoints.CoordLongNameEN(Index: TRiggPoint): string;
 begin
   case Index of
     ooN0: result := 'Base Point N0';
@@ -395,7 +395,7 @@ begin
     ooA: result := 'Spreader Stb';
     ooB: result := 'Spreader Bb';
     ooC: result := 'Headstay';
-    ooD: result := 'Sreader Mast';
+    ooD: result := 'Spreader Mast';
     ooE: result := 'Controller';
     ooF: result := 'Mast Top';
     ooP: result := 'Point P';
@@ -403,7 +403,7 @@ begin
   end;
 end;
 
-class function TRiggPoints.CoordShortName(Index: TRiggPoint): string;
+class function TRiggPoints.CoordLongNameDE(Index: TRiggPoint): string;
 begin
   case Index of
     ooN0: result := 'Basispunkt';
