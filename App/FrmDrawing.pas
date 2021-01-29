@@ -344,7 +344,10 @@ begin
   ML := Memo.Lines;
   ML.Clear;
   SetupMemo(Memo);
+  WantMemoOutput := False;
+{$ifdef WantMemoOutput}
   WantMemoOutput := True;
+{$endif}
 {$endif}
 
   CreateDrawings;

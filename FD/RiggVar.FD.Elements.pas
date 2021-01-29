@@ -838,9 +838,11 @@ type
   end;
 
   TRggChart = class(TRggElement)
+  private
+    function GetCount: Integer;
   protected
     PD: TPathData;
-    LNr: Integer;
+    FIntervalCount: Integer;
     procedure DrawText(g: TCanvas);
     procedure DrawPoly1(g: TCanvas);
     procedure DrawPoly2(g: TCanvas);
@@ -863,14 +865,15 @@ type
     PointRadius: single;
     CurveOpacity: single;
 
-    constructor Create(ACount: Integer = 20);
+    constructor Create(AIntervalCount: Integer = 20);
     destructor Destroy; override;
     procedure Draw(g: TCanvas); override;
 
     procedure InitDefault;
 
     procedure LookForYMinMax;
-    property Count: Integer read LNr;
+    property IntervalCount: Integer read FIntervalCount;
+    property Count: Integer read GetCount;
   end;
 
   TRggButtonGroup = class
@@ -4043,7 +4046,7 @@ var
 begin
   Ymax := Poly[0];
   Ymin := Ymax;
-  for i := 0 to LNr do
+  for i := 0 to FIntervalCount do
   begin
     t := Poly[i];
     if t > Ymax then
@@ -4053,7 +4056,7 @@ begin
   end;
 end;
 
-constructor TRggChart.Create(ACount: Integer = 20);
+constructor TRggChart.Create(AIntervalCount: Integer = 20);
 begin
   inherited Create;
   TypeName := 'Chart';
@@ -4061,11 +4064,11 @@ begin
 
   PD := TPathData.Create;
 
-  LNr := ACount;
-  if ACount > 9 then
-    LNr := ACount;
+  FIntervalCount := 1;
+  if AIntervalCount > FIntervalCount then
+    FIntervalCount := AIntervalCount;
 
-  SetLength(Poly, LNr + 1);
+  SetLength(Poly, FIntervalCount + 1);
 
   Box.X := 0;
   Box.Y := 0;
@@ -4122,9 +4125,9 @@ begin
     P.X := ox;
     P.Y := oy + tempY;
     LineToPoint := P;
-    for i := 1 to LNr do
+    for i := 1 to FIntervalCount do
     begin
-      tempX := Box.Width * i / LNr;
+      tempX := Box.Width * i / FIntervalCount;
       tempY := Box.Height - Box.Height * (Poly[i] - Ymin) / (Ymax - Ymin);
       P.X := ox + tempX;
       P.Y := oy + tempY;
@@ -4137,9 +4140,9 @@ begin
     g.Stroke.Thickness := 1.0;
     g.Stroke.Color := claWhite;
     g.Fill.Color := StrokeColor;
-    for i := 0 to LNr do
+    for i := 0 to FIntervalCount do
     begin
-      tempX := Box.Width * i / LNr;
+      tempX := Box.Width * i / FIntervalCount;
       tempY := Box.Height - Box.Height * (Poly[i] - Ymin) / (Ymax - Ymin);
       P.X := ox + tempX;
       P.Y := oy + tempY;
@@ -4172,13 +4175,18 @@ begin
   end;
 end;
 
+function TRggChart.GetCount: Integer;
+begin
+  result := FIntervalCount + 1;
+end;
+
 procedure TRggChart.InitDefault;
 var
   i: Integer;
 begin
-  for i := 0 to LNr do
+  for i := 0 to FIntervalCount do
   begin
-    Poly[i] := sin(i / LNr * 2 * Pi);
+    Poly[i] := sin(i / FIntervalCount * 2 * Pi);
   end;
   LookForYMinMax;
 end;
@@ -4211,9 +4219,9 @@ begin
     P.X := ox;
     P.Y := oy + tempY;
     PD.MoveTo(P);
-    for i := 1 to LNr do
+    for i := 1 to FIntervalCount do
     begin
-      tempX := Box.Width * (i / LNr);
+      tempX := Box.Width * (i / FIntervalCount);
       tempY := Box.Height - Box.Height * (Poly[i] - Ymin) / (Ymax - Ymin);
       P.X := ox + tempX;
       P.Y := oy + tempY;
@@ -4227,9 +4235,9 @@ begin
     g.Stroke.Thickness := 1.0;
     g.Stroke.Color := claWhite;
     g.Fill.Color := StrokeColor;
-    for i := 0 to LNr do
+    for i := 0 to FIntervalCount do
     begin
-      tempX := Box.Width * i / LNr;
+      tempX := Box.Width * i / FIntervalCount;
       tempY := Box.Height - Box.Height * (Poly[i] - Ymin) / (Ymax - Ymin);
       P.X := ox + tempX;
       P.Y := oy + tempY;

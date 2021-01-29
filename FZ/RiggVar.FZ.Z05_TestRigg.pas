@@ -118,7 +118,6 @@ type
     constructor Create;
     procedure InitDefaultPos; override;
     procedure Load;
-    procedure UpdateFromRigg;
     procedure GoDark; override;
     procedure GoLight; override;
   end;
@@ -433,42 +432,6 @@ begin
     cr.Center.Z := 19.49;
   except
   end;
-end;
-
-procedure TRggDrawingZ05.UpdateFromRigg;
-var
-  rP: TRiggPoints;
-  t, p, q: TPoint3D;
-  s: string;
-
-  procedure Temp(cr: TRggCircle; oo: TRiggPoint);
-  begin
-    p := rP.V[oo];
-    t := p - q;
-    s := TRiggPoints.CoordName(oo);
-    cr.Center.X := OffsetX + t.X * InitialZoom;
-    cr.Center.Y := OffsetY - t.Z * InitialZoom;
-    cr.Center.Z := t.Y * InitialZoom;
-    cr.Save;
-  end;
-begin
-  q := rP.V[ooD0];
-  rP_D0 := q;
-
-  try
-    Temp(A0, ooA0);
-    Temp(B0, ooB0);
-    Temp(C0, ooC0);
-    Temp(D0, ooD0);
-    Temp(A, ooA);
-    Temp(B, ooB);
-    Temp(C, ooC);
-    Temp(D, ooD);
-    Temp(F, ooF);
-  except
-  end;
-
-  FixPoint3D := D.Center.C;
 end;
 
 procedure TRggDrawingZ05.GoLight;
