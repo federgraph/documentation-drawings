@@ -1,4 +1,4 @@
-unit RiggVar.FZ.Z24_Template;
+﻿unit RiggVar.FZ.Z24_Template;
 
 interface
 
@@ -9,6 +9,8 @@ type
   TRggDrawingZ24 = class(TRggDrawing)
   private
     function GetHelpText: string;
+    procedure BtnAClick(Sender: TObject);
+    procedure BtnBClick(Sender: TObject);
   public
     A0: TRggCircle;
     B0: TRggCircle;
@@ -18,6 +20,7 @@ type
     constructor Create;
     procedure InitDefaultPos; override;
 //    procedure Compute; override;
+    procedure InitButtons(BG: TRggButtonGroup); override;
   end;
 
 implementation
@@ -33,6 +36,28 @@ begin
   B.Center.X := 400;
   B.Center.Y := 100;
   B.Center.Z := 0;
+end;
+
+procedure TRggDrawingZ24.InitButtons(BG: TRggButtonGroup);
+begin
+  inherited;
+  BG.BtnA.OnClick := BtnAClick;
+  BG.BtnB.OnClick := BtnBClick;
+
+  BG.BtnA.Text := 'A*';
+  BG.BtnB.Text := 'B*';
+end;
+
+procedure TRggDrawingZ24.BtnAClick(Sender: TObject);
+begin
+  ML.Text := 'Btn A clicked.';
+  UpdateDrawing;
+end;
+
+procedure TRggDrawingZ24.BtnBClick(Sender: TObject);
+begin
+  ML.Text := 'Btn B clicked.';
+  UpdateDrawing;
 end;
 
 constructor TRggDrawingZ24.Create;
@@ -74,6 +99,8 @@ begin
   { Add points last so that they stay in front. }
   Add(A);
   Add(B);
+
+  WantMemoLines := True;
 end;
 
 function TRggDrawingZ24.GetHelpText: string;

@@ -16,6 +16,8 @@ type
     IntervalCount: Integer;
     Raster: single;
     function GetHelpText: string;
+    procedure BtnAClick(Sender: TObject);
+    procedure BtnBClick(Sender: TObject);
   public
     M1: TRggCircle;
     M2: TRggCircle;
@@ -31,14 +33,27 @@ type
 
     HT: TRggLabel;
 
+    WantContantRadius: Boolean;
+
     constructor Create;
     procedure InitDefaultPos; override;
     procedure Compute; override;
+    procedure InitButtons(BG: TRggButtonGroup); override;
   end;
 
 implementation
 
 { TRggDrawingZ20 }
+
+procedure TRggDrawingZ20.InitButtons(BG: TRggButtonGroup);
+begin
+  inherited;
+  BG.BtnA.OnClick := BtnAClick;
+  BG.BtnB.OnClick := BtnBClick;
+
+  BG.BtnA.Text := 'A*';
+  BG.BtnB.Text := 'B*';
+end;
 
 procedure TRggDrawingZ20.InitDefaultPos;
 var
@@ -155,8 +170,23 @@ begin
   FixPoint3D := M1.Center.C;
   WantRotation := False;
   WantSort := False;
+  WantMemoLines := True;
 
   DefaultElement := ParamA;
+end;
+
+procedure TRggDrawingZ20.BtnAClick(Sender: TObject);
+begin
+  WantContantRadius := True;
+  ML.Text := 'A';
+  UpdateDrawing;
+end;
+
+procedure TRggDrawingZ20.BtnBClick(Sender: TObject);
+begin
+  WantContantRadius := False;
+  ML.Text := 'B';
+  UpdateDrawing;
 end;
 
 procedure TRggDrawingZ20.Compute;
@@ -183,7 +213,10 @@ begin
 
   SKK.MittelPunkt1 := TPoint3D.Zero;
   SKK.SchnittEbene := seXY;
-  SKK.Radius1 := ParamR.RelativeValue;
+  if WantContantRadius then
+    SKK.Radius1 := 300
+  else
+    SKK.Radius1 := ParamR.RelativeValue;
   SKK.Radius2 := SKK.Radius1;
 
   Range := ParamR.RelativeValue;
@@ -200,9 +233,13 @@ begin
 
     If x is in 0..2 and IntervalWidth = 1 then 3 samples are taken at 0, 1, 2.
 
-    For x in -2..2 and IntervalWidth = 1, 5 samples will be taken at -2, -1, 0, 1, 2.
-      We need 5 = 2 * 2 + 1 samples.
+    For x in -2..2 and IntervalWidth = 1:
+      5 samples will be taken at -2, -1, 0, 1, 2.
+      We need 5 = 2 * 2 + 1 samples. (+1 being the one at zero).
+      We need 5 = end - start + 1 = 2 -(-2) + 1 samples.
       We need 5 - 1 = 4 Intervals. --> TRggChart.Create(4);
+
+    We often specify 10, 20, 50, or 100 as IntervalCount.
   }
   Assert(IntervalCount > 0);
   Assert(IntervalCount = ChartX.IntervalCount);
@@ -234,8 +271,8 @@ begin
   ML.Add('    Examine code at GitHub:');
   ML.Add('');
   ML.Add('see github.com/federgraph/');
-  ML.Add('  repository RiggVar-RG38');
-  ML.Add('  or repository documentation-drawings');
+  ML.Add('  repository RiggVar-RG38 or');
+  ML.Add('  repository documentation-drawings');
   ML.Add('    drawings are in folder FZ');
   result := ML.Text;
   ML.Clear;
