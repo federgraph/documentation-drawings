@@ -18,6 +18,8 @@ type
     function GetHelpText: string;
     procedure BtnAClick(Sender: TObject);
     procedure BtnBClick(Sender: TObject);
+    procedure BtnEClick(Sender: TObject);
+    procedure UpdateText;
   public
     M1: TRggCircle;
     M2: TRggCircle;
@@ -30,10 +32,13 @@ type
 
     ChartX: TRggChart;
     ChartY: TRggChart;
+    Epsilon1: TRggLabel;
+    Epsilon2: TRggLabel;
 
     HT: TRggLabel;
 
-    WantContantRadius: Boolean;
+    WantConstantRadius: Boolean;
+    WantNegativeStartValue: Boolean;
 
     constructor Create;
     procedure InitDefaultPos; override;
@@ -45,14 +50,55 @@ implementation
 
 { TRggDrawingZ20 }
 
+procedure TRggDrawingZ20.BtnAClick(Sender: TObject);
+begin
+  WantConstantRadius := not WantConstantRadius;
+  ML.Text := 'A';
+  UpdateText;
+  UpdateDrawing;
+end;
+
+procedure TRggDrawingZ20.BtnBClick(Sender: TObject);
+begin
+  WantNegativeStartValue := not WantNegativeStartValue;
+  ML.Text := 'B';
+  UpdateText;
+  UpdateDrawing;
+end;
+
+procedure TRggDrawingZ20.BtnEClick(Sender: TObject);
+begin
+  ParamA.Value := ParamA.OriginalValue - ParamA.BaseValue / ParamA.Scale;
+  ParamR.Value := ParamR.OriginalValue;
+  ML.Text := 'E';
+  UpdateText;
+  UpdateDrawing;
+end;
+
+procedure TRggDrawingZ20.UpdateText;
+begin
+  if WantConstantRadius then
+    ML.Add('ConstantRadius = True')
+  else
+    ML.Add('ConstantRadius = False');
+
+  if WantNegativeStartValue then
+    ML.Add('NegativeStartValue = True')
+  else
+    ML.Add('NegativeStartValue = False');
+end;
+
 procedure TRggDrawingZ20.InitButtons(BG: TRggButtonGroup);
 begin
   inherited;
   BG.BtnA.OnClick := BtnAClick;
   BG.BtnB.OnClick := BtnBClick;
+  BG.BtnE.OnClick := BtnEClick;
 
+  { ToDo: Find better short names for button actions. }
   BG.BtnA.Text := 'A*';
   BG.BtnB.Text := 'B*';
+  BG.BtnE.Text := 'E*';
 end;
 
 procedure TRggDrawingZ20.InitDefaultPos;
@@ -83,14 +129,37 @@ begin
   Name := 'Z20-Epsilon';
   Raster := 25;
 
-  { Help Text }
+  WantConstantRadius := False;
+  WantNegativeStartValue := True;
+
+  { Labels }
+
+  Bem := TRggLabel.Create;
+  Bem.Caption := 'Bemerkung';
+  Bem.Text := 'Bemerkung';
+  Bem.Position.X := 2 * Raster;
+  Bem.Position.Y := 1 * Raster;
+  Add(Bem);
+
+  Epsilon1 := TRggLabel.Create;
+  Epsilon1.Caption := 'Epsilon1';
+  Epsilon1.Text := 'Epsilon1';
+  Epsilon1.Position.X := 2 * Raster;
+  Epsilon1.Position.Y := 2 * Raster;
+  Add(Epsilon1);
+
+  Epsilon2 := TRggLabel.Create;
+  Epsilon2.Caption := 'Epsilon2';
+  Epsilon2.Text := 'Epsilon2';
+  Epsilon2.Position.X := 2 * Raster;
+  Epsilon2.Position.Y := 3 * Raster;
+  Add(Epsilon2);
 
   HT := TRggLabel.Create;
   HT.Caption := 'HelpText';
   HT.Text := GetHelpText;
-  HT.StrokeColor := TRggColors.Tomato;
   HT.IsMemoLabel := True;
-  HT.Position.Y := 200;
+  HT.Position.Y := 9 * Raster;
   Add(HT);
 
   { Points }
@@ -111,36 +180,27 @@ begin
 
   { Other Elements }
 
-  Bem := TRggLabel.Create;
-  Bem.Caption := 'Bemerkung';
-  Bem.Text := 'Bemerkung';
-  Bem.Position.X := 1 * Raster;
-  Bem.Position.X := 50;
-  Bem.StrokeColor := TRggColors.Tomato;
-
   Add(M1);
   Add(M2);
   Add(S1);
   Add(S2);
 
-  Add(Bem);
-
   ParamA := TRggParam.Create;
   ParamA.Caption := 'Abstand';
   ParamA.StrokeColor := TRggColors.Teal;
-  ParamA.StartPoint.Y := 3 * Raster;
+  ParamA.StartPoint.Y := 5 * Raster;
   Add(ParamA);
 
   ParamR := TRggParam.Create;
   ParamR.Caption := 'Range';
   ParamR.StrokeColor := TRggColors.Teal;
-  ParamR.StartPoint.Y := 5 * Raster;
+  ParamR.StartPoint.Y := 7 * Raster;
   Add(ParamR);
 
   IntervalCount := 51;
 
   ChartX := TRggChart.Create(IntervalCount);
-  ChartX.Caption := 'SP.X';
+  ChartX.Caption := 'SP.X Blue';
   ChartX.StrokeThickness := 1;
   ChartX.StrokeColor := TRggColors.Dodgerblue;
   ChartX.InitDefault;
@@ -153,7 +213,7 @@ begin
   Add(ChartX);
 
   ChartY := TRggChart.Create(IntervalCount);
-  ChartY.Caption := 'SP.Y';
+  ChartY.Caption := 'SP.Y Red';
   ChartY.StrokeThickness := 1;
   ChartY.StrokeColor := TRggColors.Tomato;
   ChartY.InitDefault;
@@ -173,20 +233,8 @@ begin
   WantMemoLines := True;
 
   DefaultElement := ParamA;
-end;
 
-procedure TRggDrawingZ20.BtnAClick(Sender: TObject);
-begin
-  WantContantRadius := True;
-  ML.Text := 'A';
-  UpdateDrawing;
-end;
-
-procedure TRggDrawingZ20.BtnBClick(Sender: TObject);
-begin
-  WantContantRadius := False;
-  ML.Text := 'B';
-  UpdateDrawing;
+  UpdateText;
 end;
 
 procedure TRggDrawingZ20.Compute;
@@ -213,14 +261,21 @@ begin
 
   SKK.MittelPunkt1 := TPoint3D.Zero;
   SKK.SchnittEbene := seXY;
-  if WantContantRadius then
+
+  if WantConstantRadius then
     SKK.Radius1 := 300
   else
     SKK.Radius1 := ParamR.RelativeValue;
+
   SKK.Radius2 := SKK.Radius1;
 
   Range := ParamR.RelativeValue;
-  StartValue := -Range * 0.5;
+
+  if WantNegativeStartValue then
+    StartValue := -Range * 0.5
+  else
+    StartValue := 0;
+
   P.X := StartValue;
   P.Y := ParamA.RelativeValue;
   P.Z := 0;
@@ -255,6 +310,16 @@ begin
   ChartX.LookForYMinMax;
   ChartY.LookForYMinMax;
 
+  i := 1;
+  P.X := ChartX.Poly[i];
+//  P.Y := ParamA.RelativeValue;
+  Epsilon1.Text := Format('Epsilon1 = %9.4f; // P%.2d := (%7.4f, %7.4f)', [P.Length, i, P.X, P.Y]);
+
+  i := IntervalCount div 2;
+  P.X := ChartX.Poly[i];
+//  P.Y := ParamA.RelativeValue;
+  Epsilon2.Text := Format('Epsilon2 = %9.4f; // P%.2d := (%7.4f, %7.4f)', [P.Length, i, P.X, P.Y]);
+
   ParamA.Text := Format('Param A = %.2f', [ParamA.RelativeValue]);
   ParamR.Text := Format('Param R = %.2f', [ParamR.RelativeValue]);
 end;
@@ -268,7 +333,6 @@ begin
   ML.Add('');
   ML.Add('Select a Parameter element.');
   ML.Add('  Scroll the wheel.');
-  ML.Add('    Examine code at GitHub:');
   ML.Add('');
   ML.Add('see github.com/federgraph/');
   ML.Add('  repository RiggVar-RG38 or');
