@@ -68,8 +68,10 @@ end;
 
 procedure TRggDrawingZ20.BtnEClick(Sender: TObject);
 begin
-  ParamA.Value := ParamA.OriginalValue - ParamA.BaseValue / ParamA.Scale;
-  ParamR.Value := ParamR.OriginalValue;
+  ParamA.ParamValue := 0;
+  ParamR.ParamValue := ParamR.BaseValue;
+//  ParamR.PixelValue := ParamR.OriginValue;
+
   ML.Text := 'E';
   UpdateText;
   UpdateDrawing;
@@ -116,11 +118,8 @@ begin
   M2.Center.Y := oy;
   M2.Center.Z := 0;
 
-  ParamA.Scale := 0.05;
-  ParamA.BaseValue := 2;
-
-  ParamR.Scale := 0.1;
-  ParamR.BaseValue := 10;
+  ParamR.ParamValue := ParamR.BaseValue;
+  ParamA.ParamValue := ParamA.BaseValue;
 end;
 
 constructor TRggDrawingZ20.Create;
@@ -132,7 +131,7 @@ begin
   WantConstantRadius := False;
   WantNegativeStartValue := True;
 
-  { Labels }
+  { Labels and Params }
 
   Bem := TRggLabel.Create;
   Bem.Caption := 'Bemerkung';
@@ -155,11 +154,27 @@ begin
   Epsilon2.Position.Y := 3 * Raster;
   Add(Epsilon2);
 
+  ParamA := TRggParam.Create;
+  ParamA.Caption := 'Abstand';
+  ParamA.StrokeColor := TRggColors.Teal;
+  ParamA.StartPoint.Y := 5 * Raster;
+  ParamA.Scale := 0.05;
+  ParamA.BaseValue := 2;
+  Add(ParamA);
+
+  ParamR := TRggParam.Create;
+  ParamR.Caption := 'Range';
+  ParamR.StrokeColor := TRggColors.Teal;
+  ParamR.StartPoint.Y := 7 * Raster;
+  ParamR.Scale := 0.1;
+  ParamR.BaseValue := 10;
+  Add(ParamR);
+
   HT := TRggLabel.Create;
   HT.Caption := 'HelpText';
   HT.Text := GetHelpText;
   HT.IsMemoLabel := True;
-  HT.Position.Y := 9 * Raster;
+  HT.Position.Y := 11 * Raster;
   Add(HT);
 
   { Points }
@@ -178,24 +193,12 @@ begin
   S2.StrokeColor := TRggColors.Lime;
   S2.IsComputed := True;
 
-  { Other Elements }
-
   Add(M1);
   Add(M2);
   Add(S1);
   Add(S2);
 
-  ParamA := TRggParam.Create;
-  ParamA.Caption := 'Abstand';
-  ParamA.StrokeColor := TRggColors.Teal;
-  ParamA.StartPoint.Y := 5 * Raster;
-  Add(ParamA);
-
-  ParamR := TRggParam.Create;
-  ParamR.Caption := 'Range';
-  ParamR.StrokeColor := TRggColors.Teal;
-  ParamR.StartPoint.Y := 7 * Raster;
-  Add(ParamR);
+  { Charts }
 
   IntervalCount := 51;
 
@@ -265,11 +268,11 @@ begin
   if WantConstantRadius then
     SKK.Radius1 := 300
   else
-    SKK.Radius1 := ParamR.RelativeValue;
+    SKK.Radius1 := ParamR.ParamValue;
 
   SKK.Radius2 := SKK.Radius1;
 
-  Range := ParamR.RelativeValue;
+  Range := ParamR.ParamValue;
 
   if WantNegativeStartValue then
     StartValue := -Range * 0.5
@@ -277,7 +280,7 @@ begin
     StartValue := 0;
 
   P.X := StartValue;
-  P.Y := ParamA.RelativeValue;
+  P.Y := ParamA.ParamValue;
   P.Z := 0;
 
   {
@@ -312,16 +315,16 @@ begin
 
   i := 1;
   P.X := ChartX.Poly[i];
-//  P.Y := ParamA.RelativeValue;
+  P.Y := ParamA.ParamValue;
   Epsilon1.Text := Format('Epsilon1 = %9.4f; // P%.2d := (%7.4f, %7.4f)', [P.Length, i, P.X, P.Y]);
 
   i := IntervalCount div 2;
   P.X := ChartX.Poly[i];
-//  P.Y := ParamA.RelativeValue;
+  P.Y := ParamA.ParamValue;
   Epsilon2.Text := Format('Epsilon2 = %9.4f; // P%.2d := (%7.4f, %7.4f)', [P.Length, i, P.X, P.Y]);
 
-  ParamA.Text := Format('Param A = %.2f', [ParamA.RelativeValue]);
-  ParamR.Text := Format('Param R = %.2f', [ParamR.RelativeValue]);
+  ParamA.Text := Format('Param A = %.2f', [ParamA.ParamValue]);
+  ParamR.Text := Format('Param R = %.2f', [ParamR.ParamValue]);
 end;
 
 function TRggDrawingZ20.GetHelpText: string;

@@ -519,26 +519,26 @@ type
 
   TRggParam = class(TRggElement)
   private
-    FOriginalValue: single;
-    FValue: single;
+    FOriginValue: single;
+    FPixelValue: single;
     FScale: single;
     FBaseValue: single;
-    procedure SetValue(const Value: single);
-    function GetRelativeValue: single;
+    procedure SetPixelValue(const Value: single);
+    function GetParamValue: single;
+    procedure SetParamValue(const Value: single);
     procedure SetScale(const Value: single);
     procedure SetBaseValue(const Value: single);
   public
     StartPoint: TPointF;
     Text: string;
     constructor Create;
-    procedure Save;
     procedure Reset;
     procedure Param1(Delta: single); override;
     procedure Draw(g: TCanvas); override;
-    property Value: single read FValue write SetValue;
+    property PixelValue: single read FPixelValue write SetPixelValue;
     property BaseValue: single read FBaseValue write SetBaseValue;
-    property OriginalValue: single read FOriginalValue;
-    property RelativeValue: single read GetRelativeValue;
+    property OriginValue: single read FOriginValue;
+    property ParamValue: single read GetParamValue write SetParamValue;
     property Scale: single read FScale write SetScale;
   end;
 
@@ -3612,8 +3612,8 @@ begin
   inherited;
   TypeName := 'Param';
   FScale := 1.0;
-  FOriginalValue := 400;
-  FValue := FOriginalValue;
+  FOriginValue := 400;
+  FPixelValue := FOriginValue;
   StartPoint := TPointF.Create(10, 10);
   StrokeThickness := 2.0;
   StrokeColor := TRggColors.Gray;
@@ -3622,12 +3622,7 @@ end;
 
 procedure TRggParam.Reset;
 begin
-  FValue := FOriginalValue;
-end;
-
-procedure TRggParam.Save;
-begin
-  FOriginalValue := FValue;
+  FPixelValue := FOriginValue;
 end;
 
 procedure TRggParam.SetBaseValue(const Value: single);
@@ -3637,17 +3632,18 @@ end;
 
 procedure TRggParam.SetScale(const Value: single);
 begin
-  FScale := Value;
+  if Value <> 0 then
+    FScale := Value;
 end;
 
-procedure TRggParam.SetValue(const Value: single);
+procedure TRggParam.SetPixelValue(const Value: single);
 begin
-  FValue := Value;
+  FPixelValue := Value;
 end;
 
 procedure TRggParam.Param1(Delta: single);
 begin
-  FValue := FValue + Delta;
+  FPixelValue := FPixelValue + Delta;
 end;
 
 procedure TRggParam.Draw(g: TCanvas);
@@ -3655,13 +3651,13 @@ var
   EndPoint: TPointF;
 begin
   EndPoint.Y := StartPoint.Y;
-  EndPoint.X := StartPoint.X + FOriginalValue;
+  EndPoint.X := StartPoint.X + FOriginValue;
 
   g.Stroke.Thickness := 5.0;
   g.Stroke.Color := TRggColors.Yellow;
   g.DrawLine(StartPoint, EndPoint, Opacity);
 
-  EndPoint.X := StartPoint.X + FValue;
+  EndPoint.X := StartPoint.X + FPixelValue;
   g.Stroke.Thickness := 1.0;
   g.Stroke.Color := TRggColors.Navy;
   g.DrawLine(StartPoint, EndPoint, Opacity);
@@ -3675,9 +3671,14 @@ begin
   end;
 end;
 
-function TRggParam.GetRelativeValue: single;
+function TRggParam.GetParamValue: single;
 begin
-  result := FBaseValue + (Value - 400) * FScale;
+  result := FBaseValue + (FPixelValue - FOriginValue) * FScale;
+end;
+
+procedure TRggParam.SetParamValue(const Value: single);
+begin
+  FPixelValue := FOriginValue - (FBaseValue - Value) / FScale;
 end;
 
 { TRggRotaLine }
