@@ -537,7 +537,7 @@ type
     procedure Draw(g: TCanvas); override;
     property PixelValue: single read FPixelValue write SetPixelValue;
     property BaseValue: single read FBaseValue write SetBaseValue;
-    property OriginValue: single read FOriginValue;
+    property OriginValue: single read FOriginValue write FOriginValue;
     property ParamValue: single read GetParamValue write SetParamValue;
     property Scale: single read FScale write SetScale;
   end;
@@ -3659,7 +3659,7 @@ begin
 
   EndPoint.X := StartPoint.X + FPixelValue;
   g.Stroke.Thickness := 1.0;
-  g.Stroke.Color := TRggColors.Navy;
+  g.Stroke.Color := TRggColors.Dodgerblue;
   g.DrawLine(StartPoint, EndPoint, Opacity);
 
   if ShowCaption or GlobalShowCaption then
