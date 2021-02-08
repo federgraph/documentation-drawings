@@ -1484,7 +1484,7 @@ begin
 {$ifdef WantDrawingList}
     LV := DrawingList;
     LV.SetColorItemFill(cla);
-    LV.SetColorBackground(claDarkGray);
+    LV.SetColorBackground(claDimGray);
     LV.SetColorItemSeparator(claDarkgray);
     LV.SetColorItemSelected(claDarkgray);
     LV.SetColorText(claAquamarine);
@@ -1492,7 +1492,7 @@ begin
 
     LV := ElementList;
     LV.SetColorItemFill(cla);
-    LV.SetColorBackground(claDarkGray);
+    LV.SetColorBackground(claDimGray);
     LV.SetColorItemSeparator(claDarkGray);
     LV.SetColorItemSelected(claDarkgray);
     LV.SetColorText(claAntiquewhite);
