@@ -1459,7 +1459,7 @@ begin
   else
   begin
     Fill.Kind := TBrushKind.Solid;
-    Fill.Color := TRggColors.WindowWhite;
+    Fill.Color := TRggColors.Windowgray;
     InplaceShape.Stroke.Color := claBlack;
     SetupMemoBackground(claWhite);
   end;

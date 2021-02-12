@@ -303,10 +303,10 @@ type
     Yellow: TRggColor;
     Yellowgreen: TRggColor;
 
-    WindowWhite: TRggColor;
-    ColorF9F9F9: TRggColor;
-    Color372E69: TRggColor;
-    Color333333: TRggColor;
+    Windowgray: TRggColor;
+    BackgroundWhite: TRggColor;
+    BackgroundBlue: TRggColor;
+    BackgroundGray: TRggColor;
 
     Null: TRggColor;
 
@@ -1895,11 +1895,11 @@ begin
 
   Null := Alpha or TAlphaColor($FFFFFF);
 
-  WindowWhite := Alpha or TAlphaColor($F0F0F0);
+  Windowgray := Alpha or TAlphaColor($F0F0F0);
 
-  ColorF9F9F9 := Alpha or TAlphaColor($F9F9F9);
-  Color372E69 := Alpha or TAlphaColor($372E69);
-  Color333333 := Alpha or TAlphaColor($333333);
+  BackgroundWhite := Alpha or TAlphaColor($F9F9F9);
+  BackgroundBlue := Alpha or TAlphaColor($372E69);
+  BackgroundGray := Alpha or TAlphaColor($333333);
 
   Aliceblue := Alpha or TAlphaColor($F0F8FF);
   Antiquewhite := Alpha or TAlphaColor($FAEBD7);
@@ -3943,7 +3943,7 @@ end;
 procedure TRggColorScheme.GoDark;
 begin
   TextColor := TRggColors.White;
-  BackgroundColor := TRggColors.Color333333;
+  BackgroundColor := TRggColors.BackgroundGray;
   LabelColor := TRggColors.Antiquewhite;
 end;
 
