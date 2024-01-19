@@ -77,7 +77,6 @@ begin
 
   Param := TRggParam.Create;
   Param.Caption := 'Test';
-//  Param.OriginValue := 200;
   Param.StrokeColor := TRggColors.Teal;
   Param.StartPoint.Y := 50;
   Param.BaseValue := 3;
